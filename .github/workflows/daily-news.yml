@@ -52,7 +52,7 @@ jobs:
           username: ${{ secrets.GMAIL_USERNAME }}
           password: ${{ secrets.GMAIL_APP_PASSWORD }}
           subject: "Guaiguai News ${{ env.UPDATE_DATE }}"
-          to: sarah.qee2008@gmail.com
+          to: sarah.qee2008@gmail.com,dyeung4190@gmail.com
           from: ${{ secrets.GMAIL_USERNAME }}
           html_body: |
             <div style="font-family: -apple-system, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
