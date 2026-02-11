@@ -33,8 +33,45 @@ jobs:
           git add index.html
           if git diff --staged --quiet; then
             echo "No changes to commit"
+            echo "NEWS_UPDATED=false" >> $GITHUB_ENV
           else
             COMMIT_DATE="$(date -u +'%Y-%m-%d')"
             git commit -m "Daily news update: ${COMMIT_DATE}"
             git push
+            echo "NEWS_UPDATED=true" >> $GITHUB_ENV
+            echo "UPDATE_DATE=${COMMIT_DATE}" >> $GITHUB_ENV
           fi
+
+      - name: Send email notification
+        if: env.NEWS_UPDATED == 'true'
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          secure: true
+          username: ${{ secrets.GMAIL_USERNAME }}
+          password: ${{ secrets.GMAIL_APP_PASSWORD }}
+          subject: "Guaiguai News ${{ env.UPDATE_DATE }}"
+          to: sarah.qee2008@gmail.com
+          from: ${{ secrets.GMAIL_USERNAME }}
+          html_body: |
+            <div style="font-family: -apple-system, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+              <h2 style="color: #1a1a2e;">🗞️ Guaiguai News ${{ env.UPDATE_DATE }}</h2>
+              <p style="color: #444; font-size: 15px; line-height: 1.6;">
+                Today's financial news dashboard has been updated with the latest articles from
+                <strong>MarketWatch</strong>, <strong>Barron's</strong>, <strong>Seeking Alpha</strong>,
+                and <strong>The Insurer</strong>.
+              </p>
+              <p style="margin: 24px 0;">
+                <a href="https://sarahqee2008.github.io/wsj_sa_summary/"
+                   style="background: #388bfd; color: white; padding: 12px 28px; border-radius: 8px;
+                          text-decoration: none; font-weight: 600; font-size: 15px;">
+                  📖 View Today's News Dashboard
+                </a>
+              </p>
+              <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 24px 0;">
+              <p style="color: #888; font-size: 12px;">
+                This is an automated notification from your Guaiguai News dashboard.<br>
+                Live market data is available on the page via TradingView widgets.
+              </p>
+            </div>

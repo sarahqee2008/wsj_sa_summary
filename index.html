@@ -84,6 +84,7 @@
         .seg-commodity .segment-icon { background: rgba(240,185,11,.12); color: #e3b341; border: 1px solid rgba(240,185,11,.25); }
         .seg-crypto .segment-icon    { background: rgba(219,171,9,.12); color: #d29922; border: 1px solid rgba(219,171,9,.25); }
         .seg-corporate .segment-icon { background: rgba(110,231,183,.12); color: #6ee7b7; border: 1px solid rgba(110,231,183,.25); }
+        .seg-insurance .segment-icon { background: rgba(255,165,0,.12); color: #ffa500; border: 1px solid rgba(255,165,0,.25); }
 
         /* ── News Grid ── */
         .news-grid {
@@ -118,6 +119,7 @@
         .tag-corporate { background: rgba(110,231,183,.15); color: #6ee7b7; }
         .tag-macro     { background: rgba(255,123,114,.15); color: #ff7b72; }
         .tag-commodity { background: rgba(240,185,11,.15); color: #e3b341; }
+        .tag-insurance { background: rgba(255,165,0,.15); color: #ffa500; }
 
         .news-card .title-en {
             font-size: 14px; font-weight: 600; color: #f0f6fc;
@@ -134,6 +136,7 @@
         .source-mw  { background: rgba(56,139,253,.1); color: #58a6ff; }
         .source-bar { background: rgba(218,55,60,.1); color: #f47067; }
         .source-sa  { background: rgba(110,231,183,.1); color: #6ee7b7; }
+        .source-ins { background: rgba(255,165,0,.1); color: #ffa500; }
         .news-card .meta .arrow { margin-left: auto; color: #484f58; transition: all .2s; }
         .news-card:hover .meta .arrow { color: #58a6ff; transform: translateX(4px); }
 
@@ -174,7 +177,7 @@
 
 <div class="header">
     <h1>每日财经速递</h1>
-    <div class="subtitle">MarketWatch · Barron's · Seeking Alpha 精选新闻 · 中文摘要 · 点击跳转原文</div>
+    <div class="subtitle">MarketWatch · Barron's · Seeking Alpha · The Insurer 精选新闻 · 中文摘要 · 点击跳转原文</div>
     <div class="date-badge">2026年2月11日 · 星期三</div>
 </div>
 
@@ -264,6 +267,7 @@
         <div class="seg-btn" data-seg="commodity">大宗商品</div>
         <div class="seg-btn" data-seg="crypto">加密货币</div>
         <div class="seg-btn" data-seg="corporate">企业动态</div>
+        <div class="seg-btn" data-seg="insurance">保险行业</div>
     </div>
 
     <!-- ═══════════════ 市场动态 ═══════════════ -->
@@ -542,6 +546,45 @@
         </div>
     </div>
 
+    <!-- ═══════════════ 保险行业 ═══════════════ -->
+    <div class="segment-section" data-segment="insurance">
+        <div class="segment-header seg-insurance">
+            <div class="segment-icon">I</div>
+            <h2>保险行业 · Insurance</h2>
+            <span class="count">3 篇</span>
+        </div>
+        <div class="news-grid">
+
+            <div class="news-card">
+                <a href="https://www.theinsurer.com/ti/news/california-fair-plan-facing-possible-overhaul-after-new-bill-introduced-2026-02-03/" target="_blank" rel="noopener">
+                    <span class="tag tag-insurance">加州改革</span>
+                    <div class="title-en">California FAIR Plan Facing Possible Overhaul After New Bill Introduced</div>
+                    <div class="summary-zh">加州保险专员Ricardo Lara和议会保险委员会主席Lisa Calderon提出新立法，拟对加州FAIR Plan进行全面改革，以改善这一剩余市场载体的承保范围和理赔处理能力。</div>
+                    <div class="meta"><span class="source source-ins">The Insurer</span><span>02-03</span><span class="arrow">→</span></div>
+                </a>
+            </div>
+
+            <div class="news-card">
+                <a href="https://www.theinsurer.com/ti/news/axis-targets-mid-to-high-single-digit-insurance-growth-as-reinsurance-volume-may-2026-01-29-2/" target="_blank" rel="noopener">
+                    <span class="tag tag-insurance">AXIS资本</span>
+                    <div class="title-en">AXIS Targets Mid- to High-Single-Digit Insurance Growth as Reinsurance Volume May Fall</div>
+                    <div class="summary-zh">AXIS资本预计2026年保险保费将实现中高个位数增长，由新特种险和中小市场动力驱动。但若再保险定价持续走软，再保险业务量可能出现双位数下降。</div>
+                    <div class="meta"><span class="source source-ins">The Insurer</span><span>01-29</span><span class="arrow">→</span></div>
+                </a>
+            </div>
+
+            <div class="news-card">
+                <a href="https://www.theinsurer.com/ti/analysis/2026-reinsurance-predictions-on-climate-ai-and-tariffs-2026-01-09/" target="_blank" rel="noopener">
+                    <span class="tag tag-insurance">行业展望</span>
+                    <div class="title-en">2026 (Re)Insurance Predictions: Climate, AI and Tariffs</div>
+                    <div class="summary-zh">2026年再保险市场三大关键变量：气候灾害频率上升推高巨灾定价，AI技术重塑承保和理赔流程，关税政策对全球贸易信用保险产生深远影响。市场正经历有序软化而非全面下行。</div>
+                    <div class="meta"><span class="source source-ins">The Insurer</span><span>01-09</span><span class="arrow">→</span></div>
+                </a>
+            </div>
+
+        </div>
+    </div>
+
     <!-- ═══════════════ DAILY REFRESH GUIDE ═══════════════ -->
     <div class="refresh-info" id="refresh-guide">
         <h3>🔄 自动更新已配置 — GitHub Actions</h3>
@@ -559,7 +602,7 @@
 
 <div class="footer">
     <p>点击任一卡片跳转至原文 · 按分类标签筛选浏览</p>
-    <p style="margin-top:8px;">数据来源：<a href="https://www.marketwatch.com" target="_blank">MarketWatch</a> · <a href="https://www.barrons.com" target="_blank">Barron's</a> · <a href="https://seekingalpha.com" target="_blank">Seeking Alpha</a></p>
+    <p style="margin-top:8px;">数据来源：<a href="https://www.marketwatch.com" target="_blank">MarketWatch</a> · <a href="https://www.barrons.com" target="_blank">Barron's</a> · <a href="https://seekingalpha.com" target="_blank">Seeking Alpha</a> · <a href="https://www.theinsurer.com" target="_blank">The Insurer</a></p>
     <p style="margin-top:8px; color:#363d45;">新闻更新：2026年2月11日 · 行情数据：TradingView 实时</p>
 </div>
 
