@@ -42,6 +42,68 @@ jobs:
             echo "UPDATE_DATE=${COMMIT_DATE}" >> $GITHUB_ENV
           fi
 
+      - name: Extract top news for email
+        if: env.NEWS_UPDATED == 'true'
+        run: |
+          # Extract first news card from each segment (title, summary, link)
+          # Gets up to 9 top stories (one per segment)
+          python3 << 'PYEOF'
+          import re, html, os
+
+          with open('index.html', 'r', encoding='utf-8') as f:
+              content = f.read()
+
+          # Find all news cards
+          card_pattern = re.compile(
+              r'<a\s+href="([^"]+)"[^>]*>.*?'
+              r'<div\s+class="title-en">([^<]+)</div>.*?'
+              r'<div\s+class="summary-zh">([^<]+)</div>.*?'
+              r'<span\s+class="source\s+source-[^"]*">([^<]+)</span>',
+              re.DOTALL
+          )
+
+          cards = card_pattern.findall(content)
+
+          # Pick top 8 unique articles (dedup by URL)
+          seen_urls = set()
+          top_news = []
+          for url, title, summary, source in cards:
+              if url not in seen_urls and len(top_news) < 8:
+                  seen_urls.add(url)
+                  top_news.append({
+                      'url': html.unescape(url),
+                      'title': html.unescape(title.strip()),
+                      'summary': html.unescape(summary.strip()),
+                      'source': html.unescape(source.strip())
+                  })
+
+          # Build HTML for email
+          news_html = ''
+          for i, item in enumerate(top_news):
+              source_color = '#58a6ff'
+              if 'Barron' in item['source']:
+                  source_color = '#e74c3c'
+              elif 'SA' in item['source']:
+                  source_color = '#2ecc71'
+              elif 'Insurer' in item['source']:
+                  source_color = '#f39c12'
+
+              news_html += f'''
+              <div style="margin-bottom: 16px; padding: 14px 16px; background: #f8f9fa; border-radius: 8px; border-left: 3px solid {source_color};">
+                <a href="{item['url']}" style="color: #1a1a2e; text-decoration: none; font-size: 14px; font-weight: 600; line-height: 1.4;">{item['title']}</a>
+                <p style="color: #666; font-size: 13px; margin: 6px 0 0; line-height: 1.6;">{item['summary']}</p>
+                <span style="color: {source_color}; font-size: 11px; font-weight: 500;">{item['source']}</span>
+              </div>'''
+
+          # Write to env file
+          with open(os.environ['GITHUB_ENV'], 'a') as env_file:
+              env_file.write('NEWS_HTML<<NEWSEOF\n')
+              env_file.write(news_html)
+              env_file.write('\nNEWSEOF\n')
+
+          print(f"Extracted {len(top_news)} top news items for email")
+          PYEOF
+
       - name: Send email notification
         if: env.NEWS_UPDATED == 'true'
         uses: dawidd6/action-send-mail@v3
@@ -55,23 +117,28 @@ jobs:
           to: sarah.qee2008@gmail.com,dyeung4190@gmail.com
           from: ${{ secrets.GMAIL_USERNAME }}
           html_body: |
-            <div style="font-family: -apple-system, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-              <h2 style="color: #1a1a2e;">🗞️ Guaiguai News ${{ env.UPDATE_DATE }}</h2>
-              <p style="color: #444; font-size: 15px; line-height: 1.6;">
-                Today's financial news dashboard has been updated with the latest articles from
-                <strong>MarketWatch</strong>, <strong>Barron's</strong>, <strong>Seeking Alpha</strong>,
-                and <strong>The Insurer</strong>.
-              </p>
-              <p style="margin: 24px 0;">
+            <div style="font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', Arial, sans-serif; max-width: 640px; margin: 0 auto; padding: 20px; background: #ffffff;">
+              <h2 style="color: #1a1a2e; margin-bottom: 4px;">🗞️ Guaiguai News ${{ env.UPDATE_DATE }}</h2>
+              <p style="color: #888; font-size: 13px; margin-top: 0;">MarketWatch · Barron's · Seeking Alpha · The Insurer</p>
+
+              <p style="margin: 20px 0 12px;">
                 <a href="https://sarahqee2008.github.io/wsj_sa_summary/"
-                   style="background: #388bfd; color: white; padding: 12px 28px; border-radius: 8px;
-                          text-decoration: none; font-weight: 600; font-size: 15px;">
-                  📖 View Today's News Dashboard
+                   style="background: #388bfd; color: white; padding: 10px 24px; border-radius: 8px;
+                          text-decoration: none; font-weight: 600; font-size: 14px; display: inline-block;">
+                  📖 查看完整新闻面板
                 </a>
               </p>
-              <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 24px 0;">
-              <p style="color: #888; font-size: 12px;">
-                This is an automated notification from your Guaiguai News dashboard.<br>
-                Live market data is available on the page via TradingView widgets.
+
+              <hr style="border: none; border-top: 1px solid #e8e8e8; margin: 20px 0;">
+
+              <h3 style="color: #333; font-size: 15px; margin-bottom: 14px;">📌 今日要闻精选</h3>
+
+              ${{ env.NEWS_HTML }}
+
+              <hr style="border: none; border-top: 1px solid #e8e8e8; margin: 20px 0;">
+
+              <p style="color: #aaa; font-size: 11px; text-align: center;">
+                Guaiguai News · 自动推送 · 实时行情请访问网页版<br>
+                <a href="https://sarahqee2008.github.io/wsj_sa_summary/" style="color: #388bfd;">sarahqee2008.github.io/wsj_sa_summary</a>
               </p>
             </div>
