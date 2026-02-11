@@ -35,28 +35,16 @@
 
         .container { max-width: 1120px; margin: 0 auto; padding: 28px 20px 0; }
 
-        /* ── Market Overview ── */
+        /* ── Market Overview (Live Widget) ── */
         .market-section-label {
             font-size: 13px; font-weight: 600; color: #636e7b; text-transform: uppercase;
             letter-spacing: 1.5px; margin-bottom: 14px;
         }
-        .market-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 12px;
-            margin-bottom: 36px;
-        }
-        .market-card {
+        .market-widget-wrap {
             background: #161b22; border: 1px solid #21262d; border-radius: 10px;
-            padding: 16px 12px; text-align: center; transition: border-color .2s;
+            overflow: hidden; margin-bottom: 36px;
         }
-        .market-card:hover { border-color: #30363d; }
-        .market-card .m-label { font-size: 11px; color: #636e7b; margin-bottom: 6px; font-weight: 500; }
-        .market-card .m-value { font-size: 18px; font-weight: 700; color: #f0f6fc; }
-        .market-card .m-change { font-size: 12px; font-weight: 600; margin-top: 3px; }
-        .up { color: #3fb950; }
-        .down { color: #f47067; }
-        .neutral { color: #8b949e; }
+        .market-widget-wrap .tradingview-widget-container { width: 100%; }
 
         .market-divider { height: 1px; background: #21262d; margin: 0 0 36px; }
 
@@ -178,7 +166,6 @@
         @media (max-width: 700px) {
             .header h1 { font-size: 22px; }
             .news-grid { grid-template-columns: 1fr; }
-            .market-grid { grid-template-columns: repeat(3, 1fr); }
             .news-card a { padding: 16px; }
         }
     </style>
@@ -188,54 +175,79 @@
 <div class="header">
     <h1>每日财经速递</h1>
     <div class="subtitle">MarketWatch · Barron's · Seeking Alpha 精选新闻 · 中文摘要 · 点击跳转原文</div>
-    <div class="date-badge">2026年2月10日 · 星期二</div>
+    <div class="date-badge">2026年2月11日 · 星期三</div>
 </div>
 
 <div class="container">
 
-    <!-- ═══════════════ MARKET OVERVIEW ═══════════════ -->
-    <div class="market-section-label">市场行情总览 · Market Overview</div>
+    <!-- ═══════════════ MARKET OVERVIEW (LIVE) ═══════════════ -->
+    <div class="market-section-label">实时行情 · Live Market Data</div>
 
-    <div class="market-grid">
-        <div class="market-card">
-            <div class="m-label">道琼斯</div>
-            <div class="m-value">50,188</div>
-            <div class="m-change up">▲ +0.10% 新高</div>
+    <div class="market-widget-wrap">
+        <!-- TradingView Ticker Tape Widget -->
+        <div class="tradingview-widget-container">
+            <div class="tradingview-widget-container__widget"></div>
+            <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+            {
+                "symbols": [
+                    {"proName": "FOREXCOM:SPXUSD", "title": "S&P 500"},
+                    {"proName": "FOREXCOM:DJI", "title": "Dow Jones"},
+                    {"proName": "FOREXCOM:NSXUSD", "title": "NASDAQ"},
+                    {"proName": "TVC:RUT", "title": "Russell 2000"},
+                    {"proName": "NYMEX:CL1!", "title": "WTI Oil"},
+                    {"proName": "COMEX:GC1!", "title": "Gold"},
+                    {"proName": "COMEX:SI1!", "title": "Silver"},
+                    {"proName": "COMEX:HG1!", "title": "Copper"}
+                ],
+                "showSymbolLogo": true,
+                "isTransparent": true,
+                "displayMode": "adaptive",
+                "colorTheme": "dark",
+                "locale": "en"
+            }
+            </script>
         </div>
-        <div class="market-card">
-            <div class="m-label">S&P 500</div>
-            <div class="m-value">6,942</div>
-            <div class="m-change down">▼ -0.33%</div>
-        </div>
-        <div class="market-card">
-            <div class="m-label">NASDAQ</div>
-            <div class="m-value">23,102</div>
-            <div class="m-change down">▼ -0.59%</div>
-        </div>
-        <div class="market-card">
-            <div class="m-label">Russell 2000</div>
-            <div class="m-value">+6.75%</div>
-            <div class="m-change up">▲ YTD</div>
-        </div>
-        <div class="market-card">
-            <div class="m-label">WTI 原油</div>
-            <div class="m-value">$64.32</div>
-            <div class="m-change up">▲ /桶</div>
-        </div>
-        <div class="market-card">
-            <div class="m-label">黄金</div>
-            <div class="m-value">$5,054</div>
-            <div class="m-change down">▼ -0.1% /盎司</div>
-        </div>
-        <div class="market-card">
-            <div class="m-label">白银</div>
-            <div class="m-value">$81.95</div>
-            <div class="m-change down">▼ -2.0% /盎司</div>
-        </div>
-        <div class="market-card">
-            <div class="m-label">铜</div>
-            <div class="m-value">$5.91</div>
-            <div class="m-change down">▼ -0.94% /磅</div>
+    </div>
+
+    <!-- TradingView Mini Chart Widget for detailed view -->
+    <div class="market-widget-wrap" style="margin-bottom: 36px;">
+        <div class="tradingview-widget-container">
+            <div class="tradingview-widget-container__widget"></div>
+            <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js" async>
+            {
+                "colorTheme": "dark",
+                "dateRange": "1D",
+                "showChart": true,
+                "locale": "en",
+                "isTransparent": true,
+                "showSymbolLogo": true,
+                "showFloatingTooltip": true,
+                "width": "100%",
+                "height": "420",
+                "tabs": [
+                    {
+                        "title": "Indices",
+                        "symbols": [
+                            {"s": "FOREXCOM:DJI", "d": "Dow Jones"},
+                            {"s": "FOREXCOM:SPXUSD", "d": "S&P 500"},
+                            {"s": "FOREXCOM:NSXUSD", "d": "NASDAQ"},
+                            {"s": "TVC:RUT", "d": "Russell 2000"}
+                        ],
+                        "originalTitle": "Indices"
+                    },
+                    {
+                        "title": "Commodities",
+                        "symbols": [
+                            {"s": "NYMEX:CL1!", "d": "WTI Crude Oil"},
+                            {"s": "COMEX:GC1!", "d": "Gold"},
+                            {"s": "COMEX:SI1!", "d": "Silver"},
+                            {"s": "COMEX:HG1!", "d": "Copper"}
+                        ],
+                        "originalTitle": "Commodities"
+                    }
+                ]
+            }
+            </script>
         </div>
     </div>
 
@@ -259,25 +271,16 @@
         <div class="segment-header seg-market">
             <div class="segment-icon">M</div>
             <h2>市场动态 · Markets</h2>
-            <span class="count">4 篇</span>
+            <span class="count">3 篇</span>
         </div>
         <div class="news-grid">
 
             <div class="news-card">
-                <a href="https://www.marketwatch.com/story/why-the-s-p-500-still-cant-manage-to-close-above-7-000-a0ed3136" target="_blank" rel="noopener">
-                    <span class="tag tag-market">收盘综述</span>
-                    <div class="title-en">Why the S&P 500 Still Can't Manage to Close Above 7,000</div>
-                    <div class="summary-zh">标普500多次冲击7,000点关口未果。道指续创新高至50,188点，但标普下跌0.33%收于6,942，纳指跌0.59%。AI对金融业冲击的担忧持续拖累大盘。</div>
-                    <div class="meta"><span class="source source-mw">MarketWatch</span><span>02-10</span><span class="arrow">→</span></div>
-                </a>
-            </div>
-
-            <div class="news-card">
-                <a href="https://www.marketwatch.com/story/heres-how-apples-stock-can-surge-in-the-face-of-rising-memory-costs-8cc35404" target="_blank" rel="noopener">
-                    <span class="tag tag-market">个股分析</span>
-                    <div class="title-en">Here's How Apple's Stock Can Surge Despite Rising Memory Costs</div>
-                    <div class="summary-zh">尽管内存成本上升给利润率带来压力，分析师指出苹果在AI功能整合、服务收入增长和新产品周期的推动下，股价仍有显著上行空间。</div>
-                    <div class="meta"><span class="source source-mw">MarketWatch</span><span>02-10</span><span class="arrow">→</span></div>
+                <a href="https://www.marketwatch.com/story/why-investors-arent-loving-this-january-jobs-report-dcc240e5" target="_blank" rel="noopener">
+                    <span class="tag tag-market">就业数据</span>
+                    <div class="title-en">Stocks Turn Volatile Despite Strong January Jobs Report — Here's Why Investors Aren't Happy</div>
+                    <div class="summary-zh">1月非农新增13万就业，远超预期的5.5万，失业率降至4.3%。但市场反应波动剧烈——时薪环比上涨0.4%引发通胀粘性担忧，同时2025年全年就业数据被大幅下修89.8万人。</div>
+                    <div class="meta"><span class="source source-mw">MarketWatch</span><span>02-11</span><span class="arrow">→</span></div>
                 </a>
             </div>
 
@@ -291,11 +294,11 @@
             </div>
 
             <div class="news-card">
-                <a href="https://www.marketwatch.com/story/heres-how-microns-stock-can-hit-500-according-to-deutsche-bank-282b14a5" target="_blank" rel="noopener">
-                    <span class="tag tag-market">个股目标价</span>
-                    <div class="title-en">Here's How Micron's Stock Can Hit $500, According to Deutsche Bank</div>
-                    <div class="summary-zh">德意志银行看好美光科技，给出$500目标价。AI驱动的HBM（高带宽内存）需求持续爆发，存储芯片周期上行趋势明确，美光有望成为最大受益者之一。</div>
-                    <div class="meta"><span class="source source-mw">MarketWatch</span><span>02-10</span><span class="arrow">→</span></div>
+                <a href="https://www.marketwatch.com/story/trump-i-hiked-swiss-tariffs-because-their-prime-minister-was-rude-to-me-ac606de0" target="_blank" rel="noopener">
+                    <span class="tag tag-market">关税政策</span>
+                    <div class="title-en">Trump: I Hiked Swiss Tariffs Because Their President Was Rude to Me</div>
+                    <div class="summary-zh">特朗普表示因瑞士总统态度不佳而提高对瑞士关税。关税政策持续搅动全球贸易格局，市场对贸易不确定性的担忧依然是压制风险偏好的主要因素之一。</div>
+                    <div class="meta"><span class="source source-mw">MarketWatch</span><span>02-11</span><span class="arrow">→</span></div>
                 </a>
             </div>
 
@@ -307,34 +310,25 @@
         <div class="segment-header seg-earnings">
             <div class="segment-icon">E</div>
             <h2>财报季 · Earnings Season</h2>
-            <span class="count">3 篇</span>
+            <span class="count">2 篇</span>
         </div>
         <div class="news-grid">
 
             <div class="news-card">
-                <a href="https://www.marketwatch.com/story/mattels-stock-sinks-as-weak-earnings-reveal-a-tale-of-two-toymakers-58c7b30d" target="_blank" rel="noopener">
-                    <span class="tag tag-earnings">Mattel</span>
-                    <div class="title-en">Mattel's Stock Sinks as Weak Earnings Reveal a Tale of Two Toymakers</div>
-                    <div class="summary-zh">美泰公司财报不及预期，股价大跌。与竞争对手孩之宝的分化表现愈发明显，揭示了玩具行业"两极分化"的竞争格局。</div>
-                    <div class="meta"><span class="source source-mw">MarketWatch</span><span>02-10</span><span class="arrow">→</span></div>
+                <a href="https://www.marketwatch.com/story/chipotle-ceo-doubles-down-on-not-offering-value-meals-says-our-food-is-worth-every-penny-96f3cbbd" target="_blank" rel="noopener">
+                    <span class="tag tag-earnings">Chipotle</span>
+                    <div class="title-en">Chipotle CEO: Don't Come to Us for Dollar Menus — "Our Food Is Worth Every Penny"</div>
+                    <div class="summary-zh">Chipotle新任CEO表示不会推出低价套餐，坚持定价策略。在竞争对手纷纷推出低价套餐的环境下，Chipotle依靠品质溢价和品牌力走差异化路线，反映快餐行业分化加剧。</div>
+                    <div class="meta"><span class="source source-mw">MarketWatch</span><span>02-11</span><span class="arrow">→</span></div>
                 </a>
             </div>
 
             <div class="news-card">
-                <a href="https://www.marketwatch.com/story/shopifys-stock-soars-ahead-of-earnings-why-this-analyst-is-newly-upbeat-5f0a1460" target="_blank" rel="noopener">
-                    <span class="tag tag-earnings">Shopify</span>
-                    <div class="title-en">Shopify's Stock Soars Ahead of Earnings — Why This Analyst Is Newly Upbeat</div>
-                    <div class="summary-zh">Shopify财报前股价飙升。分析师新近上调评级，看好其电商平台AI功能整合和商户增长势头，认为估值仍有提升空间。</div>
-                    <div class="meta"><span class="source source-mw">MarketWatch</span><span>02-10</span><span class="arrow">→</span></div>
-                </a>
-            </div>
-
-            <div class="news-card">
-                <a href="https://www.marketwatch.com/story/fords-rosier-outlook-for-the-year-sends-stock-higher-after-earnings-eccfcbb2" target="_blank" rel="noopener">
-                    <span class="tag tag-earnings">Ford</span>
-                    <div class="title-en">Ford's Rosier Outlook Sends Stock Higher After Earnings</div>
-                    <div class="summary-zh">福特汽车发布乐观的年度展望，财报后股价上涨。管理层对电动车业务减亏和商用车利润率改善的指引超出市场预期。</div>
-                    <div class="meta"><span class="source source-mw">MarketWatch</span><span>02-10</span><span class="arrow">→</span></div>
+                <a href="https://seekingalpha.com/article/4868832-goodyear-a-volatile-2026-ahead" target="_blank" rel="noopener">
+                    <span class="tag tag-earnings">Goodyear</span>
+                    <div class="title-en">Goodyear: A Volatile 2026 Ahead — 10% Organic SOI Growth Target</div>
+                    <div class="summary-zh">固特异展望2026年，管理层设定10%有机SOI增长目标。然而关税风险和原材料成本波动令前景充满不确定性，分析师预计GT股票将面临较大波动。</div>
+                    <div class="meta"><span class="source source-sa">SA</span><span>02-11</span><span class="arrow">→</span></div>
                 </a>
             </div>
 
@@ -346,42 +340,33 @@
         <div class="segment-header seg-stock">
             <div class="segment-icon">S</div>
             <h2>股票精选 · Stock Picks</h2>
-            <span class="count">4 篇</span>
+            <span class="count">3 篇</span>
         </div>
         <div class="news-grid">
 
             <div class="news-card">
-                <a href="https://www.dividendology.com/p/barrons-top-10-stocks-for-2026" target="_blank" rel="noopener">
-                    <span class="tag tag-stock">年度精选</span>
-                    <div class="title-en">Barron's Top 10 Stocks for 2026 — "Laggards Leading" Strategy</div>
-                    <div class="summary-zh">Barron's 2026十大精选转向"落后者领跑"策略，押注从动量股向价值收入股轮动。重仓高股息防御股：SLG（7.0%）、BMY（4.9%）、Comcast（约5%）。2025年精选回报27.9%，跑赢标普15.3%近一倍。</div>
-                    <div class="meta"><span class="source source-bar">Barron's</span><span>2026精选</span><span class="arrow">→</span></div>
+                <a href="https://seekingalpha.com/article/4856490-alphabet-isnt-dead-its-our-top-2026-pick" target="_blank" rel="noopener">
+                    <span class="tag tag-stock">GOOGL</span>
+                    <div class="title-en">Alphabet Isn't Dead — It's Our Top 2026 Pick</div>
+                    <div class="summary-zh">分析师力挺Alphabet为2026首选股。其量子芯片Willow实现超级计算机13,000倍速度优势，AI搜索、云业务持续增长。$180B AI资本开支引发的恐慌反而创造了买入窗口。</div>
+                    <div class="meta"><span class="source source-sa">SA</span><span>02-10</span><span class="arrow">→</span></div>
                 </a>
             </div>
 
             <div class="news-card">
-                <a href="https://seekingalpha.com/news/4533862-top-picks-for-2026-from-top-performing-funds-barrons" target="_blank" rel="noopener">
-                    <span class="tag tag-stock">基金精选</span>
-                    <div class="title-en">Top Picks for 2026 from Top-Performing Funds — Barron's</div>
-                    <div class="summary-zh">Barron's汇总顶级基金经理2026年看好标的。ASML和伯克希尔·哈撒韦继续入选，押注半导体主导地位和多元化金融帝国的长期结构性趋势。</div>
-                    <div class="meta"><span class="source source-bar">Barron's</span><span>基金</span><span class="arrow">→</span></div>
-                </a>
-            </div>
-
-            <div class="news-card">
-                <a href="https://seekingalpha.com/article/4856608-top-10-stocks-for-2026" target="_blank" rel="noopener">
-                    <span class="tag tag-stock">量化精选</span>
-                    <div class="title-en">SA Top 10 Stocks for 2026 — 73% Average EPS Growth</div>
-                    <div class="summary-zh">SA量化策略VP发布2026十大精选，平均EPS增长率73%。重点推荐Celestica (CLS)、美光 (MU)、AMD等，基于数据驱动量化模型选股。</div>
-                    <div class="meta"><span class="source source-sa">SA</span><span>精选</span><span class="arrow">→</span></div>
+                <a href="https://www.marketwatch.com/story/microns-stock-pops-heres-what-an-executive-just-said-to-calm-nervous-investors-d5740cce" target="_blank" rel="noopener">
+                    <span class="tag tag-stock">MU</span>
+                    <div class="title-en">Micron's Stock Pops — Here's What an Executive Said to Calm Nervous Investors</div>
+                    <div class="summary-zh">美光高管发表讲话安抚投资者情绪，股价应声上涨。AI驱动的HBM（高带宽内存）需求持续爆发，管理层强调供需格局依然紧张，对全年业绩充满信心。</div>
+                    <div class="meta"><span class="source source-mw">MarketWatch</span><span>02-11</span><span class="arrow">→</span></div>
                 </a>
             </div>
 
             <div class="news-card">
                 <a href="https://seekingalpha.com/article/4865202-top-10-high-yield-dividend-stocks-for-february-2026" target="_blank" rel="noopener">
                     <span class="tag tag-stock">高股息</span>
-                    <div class="title-en">Top 10 High-Yield Dividend Stocks — Feb 2026</div>
-                    <div class="summary-zh">SA发布2月十大高收益股息股精选。自创建以来年化14.63%，初始股息率显著高于VYM和SPY，适合追求稳定现金流的收入型投资者。</div>
+                    <div class="title-en">Top 10 High-Yield Dividend Stocks — February 2026</div>
+                    <div class="summary-zh">SA发布2月十大高收益股息股精选。组合自创建以来年化14.63%，初始股息率显著高于VYM和SPY，适合追求稳定现金流的收入型投资者。</div>
                     <div class="meta"><span class="source source-sa">SA</span><span>02月</span><span class="arrow">→</span></div>
                 </a>
             </div>
@@ -394,16 +379,16 @@
         <div class="segment-header seg-macro">
             <div class="segment-icon">$</div>
             <h2>宏观经济 · Macro Economy</h2>
-            <span class="count">2 篇</span>
+            <span class="count">3 篇</span>
         </div>
         <div class="news-grid">
 
             <div class="news-card">
-                <a href="https://www.marketwatch.com/story/consumer-credit-growth-soars-in-december-d405d18e" target="_blank" rel="noopener">
-                    <span class="tag tag-macro">消费信贷</span>
-                    <div class="title-en">Consumer Credit Growth Soars in December</div>
-                    <div class="summary-zh">12月消费信贷增长大幅攀升，显示消费者借贷意愿强劲。但消费支出持平远低于预期，10年期国债收益率降至一个月低点，市场预计2026年美联储将降息三次。</div>
-                    <div class="meta"><span class="source source-mw">MarketWatch</span><span>02-10</span><span class="arrow">→</span></div>
+                <a href="https://www.pbs.org/newshour/show/what-trumps-nomination-of-inflation-hawk-kevin-warsh-means-for-the-federal-reserve" target="_blank" rel="noopener">
+                    <span class="tag tag-macro">美联储</span>
+                    <div class="title-en">Kevin Warsh Nominated as Next Fed Chair — What It Means for Markets</div>
+                    <div class="summary-zh">特朗普提名前美联储理事Kevin Warsh为下任美联储主席，接替5月卸任的鲍威尔。Warsh曾是通胀鹰派但近期转向偏鸽，市场关注其政策立场对利率路径的影响。CPI通胀仍在2.7%高位。</div>
+                    <div class="meta"><span class="source source-bar">Barron's</span><span>02-11</span><span class="arrow">→</span></div>
                 </a>
             </div>
 
@@ -411,8 +396,17 @@
                 <a href="https://seekingalpha.com/article/4857742-10-predictions-for-2026" target="_blank" rel="noopener">
                     <span class="tag tag-macro">年度展望</span>
                     <div class="title-en">10 Predictions for 2026 — $38T Debt, Fed Leadership Uncertainty</div>
-                    <div class="summary-zh">美国国债突破38万亿美元；约1/3受访者预测美联储将更激进；1月裁员108,435人为2009年来最高，与上涨市场形成悖论。下任美联储主席任命为关键变量。</div>
-                    <div class="meta"><span class="source source-sa">SA</span><span>展望</span><span class="arrow">→</span></div>
+                    <div class="summary-zh">美国国债突破38万亿美元；1月裁员108,435人为2009年来最高。约1/3受访者预测美联储将更激进。下任美联储主席人选成为影响利率预期的关键变量。</div>
+                    <div class="meta"><span class="source source-sa">SA</span><span>02-10</span><span class="arrow">→</span></div>
+                </a>
+            </div>
+
+            <div class="news-card">
+                <a href="https://www.marketwatch.com/story/consumer-credit-growth-soars-in-december-d405d18e" target="_blank" rel="noopener">
+                    <span class="tag tag-macro">消费信贷</span>
+                    <div class="title-en">Consumer Credit Growth Soars in December</div>
+                    <div class="summary-zh">12月消费信贷增长大幅攀升，显示消费者借贷意愿强劲。10年期国债收益率降至一个月低点，市场预计2026年美联储将降息三次。</div>
+                    <div class="meta"><span class="source source-mw">MarketWatch</span><span>02-10</span><span class="arrow">→</span></div>
                 </a>
             </div>
 
@@ -424,25 +418,34 @@
         <div class="segment-header seg-ai">
             <div class="segment-icon">AI</div>
             <h2>人工智能 · Artificial Intelligence</h2>
-            <span class="count">2 篇</span>
+            <span class="count">3 篇</span>
         </div>
         <div class="news-grid">
 
             <div class="news-card">
-                <a href="https://seekingalpha.com/article/4865925-top-10-ai-stocks-for-2026" target="_blank" rel="noopener">
+                <a href="https://www.marketwatch.com/story/this-home-generator-maker-is-shifting-focus-to-ai-data-centers-and-the-stock-is-soaring-cc6f3d8f" target="_blank" rel="noopener">
+                    <span class="tag tag-ai">AI数据中心</span>
+                    <div class="title-en">Generac Shifts Focus to AI Data Centers — Stock Soars</div>
+                    <div class="summary-zh">家用发电机制造商Generac宣布战略转型，重点布局AI数据中心电力供应市场。AI算力爆发带来的巨大电力需求为传统能源设备企业打开了新增长空间，股价应声大涨。</div>
+                    <div class="meta"><span class="source source-mw">MarketWatch</span><span>02-11</span><span class="arrow">→</span></div>
+                </a>
+            </div>
+
+            <div class="news-card">
+                <a href="https://seekingalpha.com/article/4858610-sa-quant-top-10-in-2026-a-focus-on-the-ai-trade" target="_blank" rel="noopener">
                     <span class="tag tag-ai">AI选股</span>
-                    <div class="title-en">Top 10 AI Stocks for 2026 — Quant Picks & Analysis</div>
-                    <div class="summary-zh">SA从四大AI主题ETF中筛选十大AI股票。深入解析关键指标，识别可持续长期增长公司，涵盖AI基础设施和数据中心扩张等核心主题。</div>
+                    <div class="title-en">SA Quant Top 10 for 2026: A Focus on the AI Trade</div>
+                    <div class="summary-zh">SA量化模型聚焦AI主题选出2026十大股票。从四大AI主题ETF中筛选，涵盖AI基础设施、数据中心扩张和半导体核心环节，识别可持续长期增长标的。</div>
                     <div class="meta"><span class="source source-sa">SA</span><span>02月</span><span class="arrow">→</span></div>
                 </a>
             </div>
 
             <div class="news-card">
-                <a href="https://www.marketwatch.com/story/heres-how-apples-stock-can-surge-in-the-face-of-rising-memory-costs-8cc35404" target="_blank" rel="noopener">
-                    <span class="tag tag-ai">AI设备</span>
-                    <div class="title-en">Apple's AI Push: How the Stock Can Surge Despite Memory Cost Headwinds</div>
-                    <div class="summary-zh">苹果在AI领域的积极布局正在重塑投资者预期。尽管内存成本上升，但设备端AI功能的整合有望开启新一轮iPhone升级超级周期，支撑股价上行。</div>
-                    <div class="meta"><span class="source source-mw">MarketWatch</span><span>02-10</span><span class="arrow">→</span></div>
+                <a href="https://boomers-daily.com/2026/02/07/barrons-magazine-february-9-2026/" target="_blank" rel="noopener">
+                    <span class="tag tag-ai">机器人</span>
+                    <div class="title-en">Barron's Cover: "Robots Get Real" — How to Invest in the Humanoid Robot Wave</div>
+                    <div class="summary-zh">Barron's封面故事聚焦人形机器人投资浪潮。波士顿动力Atlas机器人获CES 2026最佳机器人奖；丰田开发大型行为模型助力工厂机器人；马斯克预言Optimus机器人将占特斯拉80%价值。</div>
+                    <div class="meta"><span class="source source-bar">Barron's</span><span>02-09</span><span class="arrow">→</span></div>
                 </a>
             </div>
 
@@ -462,17 +465,17 @@
                 <a href="https://seekingalpha.com/article/4867905-commodities-world-stocks-surge-to-start-2026" target="_blank" rel="noopener">
                     <span class="tag tag-commodity">资产配置</span>
                     <div class="title-en">Commodities & World Stocks Surge to Start 2026 (+10.49%)</div>
-                    <div class="summary-zh">2026开局强劲：大宗商品+10.49%领跑，全球股票+5.44%。存储股均涨77%（SNDK +152%），企业软件大跌，显示强烈的周期性轮动信号。</div>
+                    <div class="summary-zh">2026开局强劲：大宗商品+10.49%领跑所有资产类别，全球股票+5.44%。存储芯片股均涨77%，企业软件股大跌，市场出现强烈周期性轮动信号。</div>
                     <div class="meta"><span class="source source-sa">SA</span><span>02月</span><span class="arrow">→</span></div>
                 </a>
             </div>
 
             <div class="news-card">
-                <a href="https://www.marketwatch.com/story/u-s-productivity-slows-down-in-fourth-quarter-while-unit-labor-costs-accelerate-3c2b9092" target="_blank" rel="noopener">
-                    <span class="tag tag-commodity">经济数据</span>
-                    <div class="title-en">U.S. Productivity Slows in Q4 While Unit Labor Costs Accelerate</div>
-                    <div class="summary-zh">美国第四季度劳动生产率放缓，而单位劳动成本加速上升。WTI原油维持$64.32/桶，地缘政治风险（美伊霍尔木兹海峡紧张）继续支撑油价。</div>
-                    <div class="meta"><span class="source source-mw">MarketWatch</span><span>02-10</span><span class="arrow">→</span></div>
+                <a href="https://seekingalpha.com/article/4856778-5-predictions-for-2026-gold-silver-bitcoin-ai-geopolitics" target="_blank" rel="noopener">
+                    <span class="tag tag-commodity">黄金白银</span>
+                    <div class="title-en">5 Predictions for 2026: Gold to $5,500, Silver, Bitcoin, AI & Geopolitics</div>
+                    <div class="summary-zh">分析师预测2026年黄金将冲击$5,500/盎司，远超主流机构$4,800-$5,000目标位。央行持续购金、地缘政治风险和通胀对冲需求是三大驱动因素。</div>
+                    <div class="meta"><span class="source source-sa">SA</span><span>02-10</span><span class="arrow">→</span></div>
                 </a>
             </div>
 
@@ -489,20 +492,20 @@
         <div class="news-grid">
 
             <div class="news-card">
-                <a href="https://seekingalpha.com/article/4868092-bitcoin-paper-market-futures-options-push-price-down-rip-it-up" target="_blank" rel="noopener">
+                <a href="https://seekingalpha.com/article/4868209-what-triggered-bitcoin-major-selloff-in-february-2026" target="_blank" rel="noopener">
                     <span class="tag tag-crypto">比特币</span>
-                    <div class="title-en">Bitcoin's Paper Market: How Futures & Options Push Price Down</div>
-                    <div class="summary-zh">深度解析BTC期货与期权如何压低价格再拉升。比特币YTD下跌12%，从历史高点回落38.5%。杠杆已大幅降低但压力指标仍高，底层结构完好。</div>
-                    <div class="meta"><span class="source source-sa">SA</span><span>02-10</span><span class="arrow">→</span></div>
+                    <div class="title-en">What Triggered Bitcoin's Major Selloff in February 2026?</div>
+                    <div class="summary-zh">深度解析BTC二月暴跌原因：期货杠杆清算、关税冲击风险偏好、美联储政策不确定性三重利空叠加。不过机构ETF买盘构成结构性底部支撑，极端回撤概率较低。</div>
+                    <div class="meta"><span class="source source-sa">SA</span><span>02-11</span><span class="arrow">→</span></div>
                 </a>
             </div>
 
             <div class="news-card">
-                <a href="https://seekingalpha.com/news/4547997-bitcoin-s-price-target-at-zero" target="_blank" rel="noopener">
-                    <span class="tag tag-crypto">极端观点</span>
-                    <div class="title-en">Bitcoin Gets Zero Price Target from Pivotus Partners</div>
-                    <div class="summary-zh">Pivotus Partners首席市场策略师Richard Farr给出比特币零美元目标价。这一极端看空观点出现在BTC大幅回调之际，市场多空分歧加剧。</div>
-                    <div class="meta"><span class="source source-sa">SA</span><span>02-10</span><span class="arrow">→</span></div>
+                <a href="https://www.marketwatch.com/story/crypto-caution-weighs-on-robinhoods-sales-and-sinks-its-stock-ff27eac8" target="_blank" rel="noopener">
+                    <span class="tag tag-crypto">HOOD</span>
+                    <div class="title-en">Crypto Winter Hits Robinhood — CEO Sees Prediction Market 'Super Cycle'</div>
+                    <div class="summary-zh">加密寒冬拖累Robinhood加密交易收入，股价承压。但CEO Vlad Tenev看好预测市场"超级周期"，公司积极布局新交易产品以实现收入多元化。</div>
+                    <div class="meta"><span class="source source-mw">MarketWatch</span><span>02-11</span><span class="arrow">→</span></div>
                 </a>
             </div>
 
@@ -519,20 +522,20 @@
         <div class="news-grid">
 
             <div class="news-card">
-                <a href="https://www.marketwatch.com/story/lyft-offers-1-billion-buyback-but-shares-are-tumbling-after-mixed-results-and-outlook-513f758b" target="_blank" rel="noopener">
-                    <span class="tag tag-corporate">Lyft</span>
-                    <div class="title-en">Lyft Offers $1B Buyback, But Stock Tumbles After Mixed Results</div>
-                    <div class="summary-zh">Lyft宣布10亿美元回购计划，但业绩和前瞻指引不及预期导致股价大跌。尽管回购显示管理层信心，市场对网约车行业增长放缓的担忧加剧。</div>
-                    <div class="meta"><span class="source source-mw">MarketWatch</span><span>02-10</span><span class="arrow">→</span></div>
+                <a href="https://www.marketwatch.com/story/how-elon-musks-starlink-is-fueling-growth-by-tackling-terrible-airplane-wifi-0f5d227a" target="_blank" rel="noopener">
+                    <span class="tag tag-corporate">SpaceX</span>
+                    <div class="title-en">How Elon Musk's Starlink Is Fueling Growth by Tackling Terrible Airplane WiFi</div>
+                    <div class="summary-zh">SpaceX旗下Starlink正在通过革新飞机WiFi服务加速增长。航空WiFi市场规模巨大且用户体验长期痛点突出，Starlink的卫星互联网技术有望颠覆该领域并创造可观收入。</div>
+                    <div class="meta"><span class="source source-mw">MarketWatch</span><span>02-11</span><span class="arrow">→</span></div>
                 </a>
             </div>
 
             <div class="news-card">
-                <a href="https://www.marketwatch.com/story/crypto-caution-weighs-on-robinhoods-sales-and-sinks-its-stock-ff27eac8" target="_blank" rel="noopener">
-                    <span class="tag tag-corporate">Robinhood</span>
-                    <div class="title-en">Crypto Winter Hits Robinhood's Sales — CEO Sees Prediction Market 'Super Cycle'</div>
-                    <div class="summary-zh">加密寒冬拖累Robinhood营收，股价下跌。但CEO Vlad Tenev表示看好预测市场"超级周期"，公司正积极布局新交易产品以实现多元化增长。</div>
-                    <div class="meta"><span class="source source-mw">MarketWatch</span><span>02-10</span><span class="arrow">→</span></div>
+                <a href="https://seekingalpha.com/news/4549657-goodyear-outlines-10-percent-organic-soi-growth-base-case-for-2026-amid-continued-cost-discipline" target="_blank" rel="noopener">
+                    <span class="tag tag-corporate">内部人买入</span>
+                    <div class="title-en">Insiders Buying: Lumen CEO Buys $500K, SoFi Officers Load Up Post-Earnings Dip</div>
+                    <div class="summary-zh">Lumen Technologies CEO Kathleen Johnson增持76,685股约$500K，展示对公司转型战略的信心。SoFi总法律顾问和借贷主管各买入5,000股，财报回调后内部人逢低吸纳。</div>
+                    <div class="meta"><span class="source source-bar">Barron's</span><span>02-11</span><span class="arrow">→</span></div>
                 </a>
             </div>
 
@@ -542,12 +545,13 @@
     <!-- ═══════════════ DAILY REFRESH GUIDE ═══════════════ -->
     <div class="refresh-info" id="refresh-guide">
         <h3>🔄 自动更新已配置 — GitHub Actions</h3>
-        <p>此页面通过 <code>GitHub Actions</code> 每个工作日早上 8:00 AM ET 自动刷新内容。</p>
+        <p>此页面通过 <code>GitHub Actions</code> 每个工作日早上 10:00 AM ET 自动刷新新闻内容。市场行情数据通过 TradingView 实时更新。</p>
         <p>也可以在 GitHub 仓库的 <strong>Actions</strong> 页面手动触发更新。</p>
         <div class="cmd-block">
             仓库地址：github.com/sarahqee2008/wsj_sa_summary<br>
             在线访问：sarahqee2008.github.io/wsj_sa_summary<br>
-            更新频率：工作日 8:00 AM ET (UTC 13:00)
+            新闻更新：工作日 10:00 AM ET (UTC 15:00)<br>
+            市场行情：TradingView 实时数据
         </div>
     </div>
 
@@ -556,7 +560,7 @@
 <div class="footer">
     <p>点击任一卡片跳转至原文 · 按分类标签筛选浏览</p>
     <p style="margin-top:8px;">数据来源：<a href="https://www.marketwatch.com" target="_blank">MarketWatch</a> · <a href="https://www.barrons.com" target="_blank">Barron's</a> · <a href="https://seekingalpha.com" target="_blank">Seeking Alpha</a></p>
-    <p style="margin-top:8px; color:#363d45;">更新时间：2026年2月10日</p>
+    <p style="margin-top:8px; color:#363d45;">新闻更新：2026年2月11日 · 行情数据：TradingView 实时</p>
 </div>
 
 <script>

@@ -2,8 +2,8 @@ name: Daily News Update
 
 on:
   schedule:
-    # 8:00 AM ET = 13:00 UTC (EST) / 12:00 UTC (EDT)
-    - cron: '0 13 * * 1-5'
+    # 10:00 AM ET = 15:00 UTC (EST) / 14:00 UTC (EDT)
+    - cron: '0 15 * * 1-5'
   workflow_dispatch:
 
 permissions:
