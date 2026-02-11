@@ -33,6 +33,24 @@
             border-radius: 20px; font-size: 13px; color: #58a6ff;
         }
 
+        /* ── Almanac & Weather Strip ── */
+        .almanac-strip {
+            max-width: 800px; margin: 16px auto 0; padding: 12px 20px;
+            background: rgba(22, 27, 34, 0.8); border: 1px solid #21262d;
+            border-radius: 12px; display: flex; flex-wrap: wrap;
+            justify-content: center; gap: 8px 20px; font-size: 12px;
+        }
+        .almanac-strip .al-item { color: #8b949e; white-space: nowrap; }
+        .almanac-strip .al-label { color: #636e7b; margin-right: 4px; }
+        .almanac-strip .al-good { color: #3fb950; }
+        .almanac-strip .al-bad { color: #f47067; }
+        .almanac-strip .al-lunar { color: #d2a679; font-weight: 500; }
+        .almanac-strip .al-jieqi { color: #e3b341; font-weight: 600; }
+        .almanac-strip .al-weather { color: #79c0ff; }
+        @media (max-width: 700px) {
+            .almanac-strip { padding: 10px 14px; gap: 6px 12px; font-size: 11px; }
+        }
+
         .container { max-width: 1120px; margin: 0 auto; padding: 28px 20px 0; }
 
         /* ── Market Overview (Live Widget) ── */
@@ -179,6 +197,13 @@
     <h1>每日财经速递</h1>
     <div class="subtitle">MarketWatch · Barron's · Seeking Alpha · The Insurer 精选新闻 · 中文摘要 · 点击跳转原文</div>
     <div class="date-badge">2026年2月11日 · 星期三</div>
+    <div class="almanac-strip">
+        <span class="al-item"><span class="al-lunar">农历腊月廿四 · 乙巳年庚寅月丙辰日</span></span>
+        <span class="al-item"><span class="al-jieqi">【立春】</span></span>
+        <span class="al-item"><span class="al-label">宜</span><span class="al-good">嫁娶 纳采 出行 祈福 修造 上梁</span></span>
+        <span class="al-item"><span class="al-label">忌</span><span class="al-bad">入宅 作灶 安葬 移徙</span></span>
+        <span class="al-item"><span class="al-weather">🌤 NYC 39°F / 29°F 西风17mph</span></span>
+    </div>
 </div>
 
 <div class="container">
