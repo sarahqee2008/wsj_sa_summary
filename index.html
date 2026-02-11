@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>每日财经速递 | WSJ & Seeking Alpha 精选</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+            background: #0a0a0f;
+            color: #e0e0e0;
+            line-height: 1.7;
+        }
+
+        /* ── Header ── */
+        .header {
+            background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+            border-bottom: 1px solid #21262d;
+            padding: 28px 0 24px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(14px);
+        }
+        .header h1 { font-size: 28px; font-weight: 700; color: #f0f6fc; letter-spacing: 2px; }
+        .header .subtitle { font-size: 14px; color: #8b949e; margin-top: 6px; }
+        .header .date-badge {
+            display: inline-block; margin-top: 10px; padding: 4px 16px;
+            background: rgba(56,139,253,.15); border: 1px solid rgba(56,139,253,.3);
+            border-radius: 20px; font-size: 13px; color: #58a6ff;
+        }
+
+        .container { max-width: 1120px; margin: 0 auto; padding: 28px 20px 0; }
+
+        /* ── Market Overview ── */
+        .market-section-label {
+            font-size: 13px; font-weight: 600; color: #636e7b; text-transform: uppercase;
+            letter-spacing: 1.5px; margin-bottom: 14px;
+        }
+        .market-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 12px;
+            margin-bottom: 36px;
+        }
+        .market-card {
+            background: #161b22; border: 1px solid #21262d; border-radius: 10px;
+            padding: 16px 12px; text-align: center; transition: border-color .2s;
+        }
+        .market-card:hover { border-color: #30363d; }
+        .market-card .m-label { font-size: 11px; color: #636e7b; margin-bottom: 6px; font-weight: 500; }
+        .market-card .m-value { font-size: 18px; font-weight: 700; color: #f0f6fc; }
+        .market-card .m-change { font-size: 12px; font-weight: 600; margin-top: 3px; }
+        .up { color: #3fb950; }
+        .down { color: #f47067; }
+        .neutral { color: #8b949e; }
+
+        .market-divider {
+            height: 1px; background: #21262d; margin: 0 0 36px;
+        }
+
+        /* ── Segment Tabs ── */
+        .segment-nav {
+            display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 28px;
+        }
+        .seg-btn {
+            padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 500;
+            border: 1px solid #21262d; background: #0d1117; color: #8b949e;
+            cursor: pointer; transition: all .2s; user-select: none;
+        }
+        .seg-btn:hover { border-color: #388bfd60; color: #c9d1d9; }
+        .seg-btn.active { background: rgba(56,139,253,.15); border-color: rgba(56,139,253,.4); color: #58a6ff; }
+
+        /* ── Segment Section ── */
+        .segment-section { margin-bottom: 36px; }
+        .segment-header {
+            display: flex; align-items: center; gap: 10px;
+            margin-bottom: 18px; padding-bottom: 10px; border-bottom: 1px solid #21262d;
+        }
+        .segment-icon {
+            width: 32px; height: 32px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 15px; font-weight: 700;
+        }
+        .segment-header h2 { font-size: 17px; font-weight: 600; color: #f0f6fc; }
+        .segment-header .count {
+            margin-left: auto; font-size: 12px; color: #484f58;
+            background: #0d1117; border: 1px solid #21262d; padding: 2px 10px; border-radius: 10px;
+        }
+
+        /* Segment colors */
+        .seg-market .segment-icon   { background: rgba(56,139,253,.12); color: #58a6ff; border: 1px solid rgba(56,139,253,.25); }
+        .seg-stock .segment-icon    { background: rgba(57,211,83,.12); color: #3fb950; border: 1px solid rgba(57,211,83,.25); }
+        .seg-macro .segment-icon    { background: rgba(255,123,114,.12); color: #ff7b72; border: 1px solid rgba(255,123,114,.25); }
+        .seg-policy .segment-icon   { background: rgba(218,55,60,.12); color: #f47067; border: 1px solid rgba(218,55,60,.25); }
+        .seg-ai .segment-icon       { background: rgba(163,113,247,.12); color: #bc8cff; border: 1px solid rgba(163,113,247,.25); }
+        .seg-commodity .segment-icon { background: rgba(240,185,11,.12); color: #e3b341; border: 1px solid rgba(240,185,11,.25); }
+        .seg-crypto .segment-icon   { background: rgba(219,171,9,.12); color: #d29922; border: 1px solid rgba(219,171,9,.25); }
+        .seg-corporate .segment-icon { background: rgba(110,231,183,.12); color: #6ee7b7; border: 1px solid rgba(110,231,183,.25); }
+
+        /* ── News Grid ── */
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 14px;
+        }
+
+        .news-card {
+            background: #161b22; border: 1px solid #21262d; border-radius: 10px;
+            transition: all .25s; overflow: hidden; display: flex; flex-direction: column;
+        }
+        .news-card:hover {
+            border-color: #388bfd40;
+            box-shadow: 0 4px 20px rgba(56,139,253,.06);
+            transform: translateY(-2px);
+        }
+        .news-card a {
+            display: flex; flex-direction: column; flex: 1;
+            padding: 20px; text-decoration: none; color: inherit;
+        }
+        .news-card .tag {
+            display: inline-block; font-size: 10px; font-weight: 600;
+            padding: 2px 8px; border-radius: 4px; margin-bottom: 10px;
+            text-transform: uppercase; letter-spacing: .5px; align-self: flex-start;
+        }
+        .tag-market    { background: rgba(56,139,253,.15); color: #58a6ff; }
+        .tag-policy    { background: rgba(218,55,60,.15); color: #f47067; }
+        .tag-ai        { background: rgba(163,113,247,.15); color: #bc8cff; }
+        .tag-stock     { background: rgba(57,211,83,.15); color: #3fb950; }
+        .tag-crypto    { background: rgba(219,171,9,.15); color: #d29922; }
+        .tag-corporate { background: rgba(110,231,183,.15); color: #6ee7b7; }
+        .tag-macro     { background: rgba(255,123,114,.15); color: #ff7b72; }
+        .tag-commodity { background: rgba(240,185,11,.15); color: #e3b341; }
+
+        .news-card .title-en {
+            font-size: 14px; font-weight: 600; color: #f0f6fc;
+            margin-bottom: 8px; line-height: 1.45;
+        }
+        .news-card .summary-zh {
+            font-size: 13.5px; color: #b1bac4; line-height: 1.8; flex: 1;
+        }
+        .news-card .meta {
+            display: flex; align-items: center; gap: 10px;
+            margin-top: 14px; font-size: 11px; color: #636e7b;
+        }
+        .news-card .meta .source {
+            padding: 2px 7px; border-radius: 4px; font-weight: 500;
+        }
+        .source-wsj { background: rgba(148,163,184,.1); color: #94a3b8; }
+        .source-sa  { background: rgba(110,231,183,.1); color: #6ee7b7; }
+        .news-card .meta .arrow {
+            margin-left: auto; color: #484f58; transition: all .2s;
+        }
+        .news-card:hover .meta .arrow { color: #58a6ff; transform: translateX(4px); }
+
+        /* ── Footer ── */
+        .footer {
+            text-align: center; padding: 36px 20px; color: #484f58;
+            font-size: 13px; border-top: 1px solid #21262d; margin-top: 36px;
+        }
+        .footer a { color: #58a6ff; text-decoration: none; }
+
+        /* ── Refresh Info Box ── */
+        .refresh-info {
+            background: linear-gradient(135deg, #161b22, #1c2333);
+            border: 1px solid #21262d; border-radius: 10px;
+            padding: 24px; margin-top: 32px;
+        }
+        .refresh-info h3 { font-size: 15px; color: #f0f6fc; margin-bottom: 12px; }
+        .refresh-info p { font-size: 13px; color: #8b949e; margin-bottom: 8px; line-height: 1.7; }
+        .refresh-info code {
+            background: #0d1117; color: #79c0ff; padding: 2px 6px;
+            border-radius: 4px; font-size: 12px; font-family: "SF Mono", Menlo, monospace;
+        }
+        .refresh-info .cmd-block {
+            background: #0d1117; border: 1px solid #21262d; border-radius: 8px;
+            padding: 14px 16px; margin: 10px 0; font-family: "SF Mono", Menlo, monospace;
+            font-size: 12px; color: #c9d1d9; line-height: 1.8; overflow-x: auto;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 700px) {
+            .header h1 { font-size: 22px; }
+            .news-grid { grid-template-columns: 1fr; }
+            .market-grid { grid-template-columns: repeat(3, 1fr); }
+            .news-card a { padding: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>每日财经速递</h1>
+    <div class="subtitle">WSJ & Seeking Alpha 精选新闻 · 中文摘要 · 点击跳转原文</div>
+    <div class="date-badge">2026年2月10日 · 星期二</div>
+</div>
+
+<div class="container">
+
+    <!-- ═══════════════ MARKET OVERVIEW ═══════════════ -->
+    <div class="market-section-label">市场行情总览 · Market Overview</div>
+
+    <div class="market-grid">
+        <div class="market-card">
+            <div class="m-label">道琼斯</div>
+            <div class="m-value">50,000+</div>
+            <div class="m-change up">历史新高</div>
+        </div>
+        <div class="market-card">
+            <div class="m-label">S&P 500 YTD</div>
+            <div class="m-value">+1.36%</div>
+            <div class="m-change up">▲</div>
+        </div>
+        <div class="market-card">
+            <div class="m-label">NASDAQ</div>
+            <div class="m-value">23,239</div>
+            <div class="m-change up">+0.90%</div>
+        </div>
+        <div class="market-card">
+            <div class="m-label">Russell 2000</div>
+            <div class="m-value">+6.75%</div>
+            <div class="m-change up">▲ YTD</div>
+        </div>
+        <div class="market-card">
+            <div class="m-label">WTI 原油</div>
+            <div class="m-value">$64.32</div>
+            <div class="m-change up">▲ /桶</div>
+        </div>
+        <div class="market-card">
+            <div class="m-label">黄金</div>
+            <div class="m-value">$5,054</div>
+            <div class="m-change down">▼ -0.1% /盎司</div>
+        </div>
+        <div class="market-card">
+            <div class="m-label">白银</div>
+            <div class="m-value">$81.95</div>
+            <div class="m-change down">▼ -2.0% /盎司</div>
+        </div>
+        <div class="market-card">
+            <div class="m-label">铜</div>
+            <div class="m-value">$5.91</div>
+            <div class="m-change down">▼ -0.94% /磅</div>
+        </div>
+    </div>
+
+    <div class="market-divider"></div>
+
+    <!-- ═══════════════ SEGMENT FILTER ═══════════════ -->
+    <div class="segment-nav">
+        <div class="seg-btn active" data-seg="all">全部</div>
+        <div class="seg-btn" data-seg="market">市场动态</div>
+        <div class="seg-btn" data-seg="stock">股票精选</div>
+        <div class="seg-btn" data-seg="macro">宏观经济</div>
+        <div class="seg-btn" data-seg="policy">政策监管</div>
+        <div class="seg-btn" data-seg="ai">人工智能</div>
+        <div class="seg-btn" data-seg="commodity">大宗商品</div>
+        <div class="seg-btn" data-seg="crypto">加密货币</div>
+        <div class="seg-btn" data-seg="corporate">企业动态</div>
+    </div>
+
+    <!-- ═══════════════ 市场动态 ═══════════════ -->
+    <div class="segment-section" data-segment="market">
+        <div class="segment-header seg-market">
+            <div class="segment-icon">M</div>
+            <h2>市场动态 · Markets</h2>
+            <span class="count">4 篇</span>
+        </div>
+        <div class="news-grid">
+
+            <div class="news-card">
+                <a href="https://wsjshop.com/products/the-wall-street-journal-sat-sun-february-07-08-2026" target="_blank" rel="noopener">
+                    <span class="tag tag-market">里程碑</span>
+                    <div class="title-en">Dow Hits 50,000 for the First Time</div>
+                    <div class="summary-zh">道琼斯指数首次突破50,000点大关。投资者对美国经济增长的乐观预期推动了这轮涨势，但分析师同时警告市场存在潜在风险信号。</div>
+                    <div class="meta"><span class="source source-wsj">WSJ</span><span>02-07</span><span class="arrow">→</span></div>
+                </a>
+            </div>
+
+            <div class="news-card">
+                <a href="https://www.schwab.com/learn/story/stock-market-update-open" target="_blank" rel="noopener">
+                    <span class="tag tag-market">市场宽度</span>
+                    <div class="title-en">S&P 500 Equal Weight Index Hits All-Time Highs</div>
+                    <div class="summary-zh">标普500等权重指数创历史新高，上涨2%，而市值加权指数下跌。市场参与度正从超大盘科技股扩散至更广泛板块，"宽度"显著改善。</div>
+                    <div class="meta"><span class="source source-wsj">WSJ</span><span>02-09</span><span class="arrow">→</span></div>
+                </a>
+            </div>
+
+            <div class="news-card">
+                <a href="https://www.cnbc.com/2026/02/08/stock-market-today-live-updates.html" target="_blank" rel="noopener">
+                    <span class="tag tag-market">国际</span>
+                    <div class="title-en">Japan's Nikkei 225 Surges Past 56,000 to Record High</div>
+                    <div class="summary-zh">日本首相高市早苗赢得历史性选举胜利后，日经225暴涨超4%首次突破56,000点，创历史新高。投资者对日本新一轮经济改革充满期待。</div>
+                    <div class="meta"><span class="source source-wsj">CNBC</span><span>02-09</span><span class="arrow">→</span></div>
+                </a>
+            </div>
+
+            <div class="news-card">
+                <a href="https://seekingalpha.com/article/4864741-sp500-beware-february-technical-analysis" target="_blank" rel="noopener">
+                    <span class="tag tag-market">技术分析</span>
+                    <div class="title-en">S&P 500: Beware February — DeMARK Exhaustion Signal</div>
+                    <div class="summary-zh">技术分析显示标普500上涨动能减弱。二月历来表现较弱，DeMARK耗竭信号暗示若反转形成，可能面临10%以上回调风险。</div>
+                    <div class="meta"><span class="source source-sa">SA</span><span>02-10</span><span class="arrow">→</span></div>
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ═══════════════ 股票精选 ═══════════════ -->
+    <div class="segment-section" data-segment="stock">
+        <div class="segment-header seg-stock">
+            <div class="segment-icon">S</div>
+            <h2>股票精选 · Stock Picks</h2>
+            <span class="count">4 篇</span>
+        </div>
+        <div class="news-grid">
+
+            <div class="news-card">
+                <a href="https://seekingalpha.com/article/4856608-top-10-stocks-for-2026" target="_blank" rel="noopener">
+                    <span class="tag tag-stock">量化精选</span>
+                    <div class="title-en">Top 10 Stocks for 2026 — 73% Average EPS Growth</div>
+                    <div class="summary-zh">SA量化策略VP发布2026十大精选，平均EPS增长率73%。重点推荐Celestica (CLS)、美光 (MU)、AMD等，基于数据驱动量化模型。</div>
+                    <div class="meta"><span class="source source-sa">SA</span><span>精选</span><span class="arrow">→</span></div>
+                </a>
+            </div>
+
+            <div class="news-card">
+                <a href="https://seekingalpha.com/news/4536103-all-jp-morgans-top-stock-picks-for-2026" target="_blank" rel="noopener">
+                    <span class="tag tag-stock">机构观点</span>
+                    <div class="title-en">J.P. Morgan's Top Stock Picks for 2026</div>
+                    <div class="summary-zh">摩根大通2026最佳标的，选股标准：财务健康、定价权、长期增长、卓越运营。三大主题：AI/数据中心扩张、基础设施电气化、质量与韧性。</div>
+                    <div class="meta"><span class="source source-sa">SA</span><span>01月</span><span class="arrow">→</span></div>
+                </a>
+            </div>
+
+            <div class="news-card">
+                <a href="https://seekingalpha.com/article/4865202-top-10-high-yield-dividend-stocks-for-february-2026" target="_blank" rel="noopener">
+                    <span class="tag tag-stock">高股息</span>
+                    <div class="title-en">Top 10 High-Yield Dividend Stocks — Feb 2026</div>
+                    <div class="summary-zh">2月十大高收益股息股精选。自创建以来年化14.63%，初始股息率显著高于VYM和SPY，适合追求稳定现金流的收入型投资者。</div>
+                    <div class="meta"><span class="source source-sa">SA</span><span>02月</span><span class="arrow">→</span></div>
+                </a>
+            </div>
+
+            <div class="news-card">
+                <a href="https://seekingalpha.com/article/4865581-stock-picks-from-seeking-alphas-january-2026-new-analysts" target="_blank" rel="noopener">
+                    <span class="tag tag-stock">新锐分析师</span>
+                    <div class="title-en">Stock Picks from January 2026 New Analysts</div>
+                    <div class="summary-zh">SA新分析师精选推荐。Alpha Picks自2022年推出以来91只股票平均涨95%，远超标普500同期25%。2026年新推荐已跑赢大盘3.2%。</div>
+                    <div class="meta"><span class="source source-sa">SA</span><span>02月</span><span class="arrow">→</span></div>
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ═══════════════ 宏观经济 ═══════════════ -->
+    <div class="segment-section" data-segment="macro">
+        <div class="segment-header seg-macro">
+            <div class="segment-icon">E</div>
+            <h2>宏观经济 · Macro Economy</h2>
+            <span class="count">1 篇</span>
+        </div>
+        <div class="news-grid">
+
+            <div class="news-card">
+                <a href="https://seekingalpha.com/article/4857742-10-predictions-for-2026" target="_blank" rel="noopener">
+                    <span class="tag tag-macro">年度展望</span>
+                    <div class="title-en">10 Predictions for 2026 — $38T Debt, Fed Leadership Uncertainty</div>
+                    <div class="summary-zh">美国国债突破38万亿美元；约1/3受访者预测美联储将更激进；1月裁员108,435人为2009年来最高，与上涨市场形成悖论。下任美联储主席任命为关键变量。</div>
+                    <div class="meta"><span class="source source-sa">SA</span><span>展望</span><span class="arrow">→</span></div>
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ═══════════════ 政策监管 ═══════════════ -->
+    <div class="segment-section" data-segment="policy">
+        <div class="segment-header seg-policy">
+            <div class="segment-icon">P</div>
+            <h2>政策监管 · Policy & Regulation</h2>
+            <span class="count">2 篇</span>
+        </div>
+        <div class="news-grid">
+
+            <div class="news-card">
+                <a href="https://www.marketscreener.com/news/trump-to-repeal-landmark-climate-finding-in-huge-regulatory-rollback-wsj-reports-ce7e5adfda8ff324" target="_blank" rel="noopener">
+                    <span class="tag tag-policy">气候政策</span>
+                    <div class="title-en">Trump to Repeal Landmark Climate "Endangerment Finding"</div>
+                    <div class="summary-zh">特朗普政府计划正式撤销奥巴马时代温室气体"危害公众健康"认定，将立即取消乘用车和商用卡车气候排放标准，为近年最大规模环境监管回调。</div>
+                    <div class="meta"><span class="source source-wsj">WSJ</span><span>02-10</span><span class="arrow">→</span></div>
+                </a>
+            </div>
+
+            <div class="news-card">
+                <a href="https://www.cnn.com/2026/02/03/politics/fact-check-trump-wsj-op-ed" target="_blank" rel="noopener">
+                    <span class="tag tag-policy">事实核查</span>
+                    <div class="title-en">Fact Check: Trump's WSJ Op-Ed Contains False Claims</div>
+                    <div class="summary-zh">CNN对特朗普在华尔街日报署名评论进行事实核查，指出其中包含多项关于经济政策和政府成就的不实声明，引发广泛讨论。</div>
+                    <div class="meta"><span class="source source-wsj">CNN</span><span>02-03</span><span class="arrow">→</span></div>
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ═══════════════ 人工智能 ═══════════════ -->
+    <div class="segment-section" data-segment="ai">
+        <div class="segment-header seg-ai">
+            <div class="segment-icon">AI</div>
+            <h2>人工智能 · Artificial Intelligence</h2>
+            <span class="count">1 篇</span>
+        </div>
+        <div class="news-grid">
+
+            <div class="news-card">
+                <a href="https://seekingalpha.com/article/4865925-top-10-ai-stocks-for-2026" target="_blank" rel="noopener">
+                    <span class="tag tag-ai">AI选股</span>
+                    <div class="title-en">Top 10 AI Stocks for 2026: Quant Picks & Analysis</div>
+                    <div class="summary-zh">SA从四大AI主题ETF中筛选十大AI股票。深入解析关键指标，识别可持续长期增长公司，涵盖AI基础设施和数据中心扩张等核心主题。</div>
+                    <div class="meta"><span class="source source-sa">SA</span><span>02月</span><span class="arrow">→</span></div>
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ═══════════════ 大宗商品 ═══════════════ -->
+    <div class="segment-section" data-segment="commodity">
+        <div class="segment-header seg-commodity">
+            <div class="segment-icon">C</div>
+            <h2>大宗商品 · Commodities</h2>
+            <span class="count">2 篇</span>
+        </div>
+        <div class="news-grid">
+
+            <div class="news-card">
+                <a href="https://seekingalpha.com/article/4867905-commodities-world-stocks-surge-to-start-2026" target="_blank" rel="noopener">
+                    <span class="tag tag-commodity">资产配置</span>
+                    <div class="title-en">Commodities & World Stocks Surge to Start 2026</div>
+                    <div class="summary-zh">2026开局强劲：大宗商品+10.49%领跑，全球股票+5.44%。存储股均涨77%（SNDK +152%），企业软件大跌，显示强烈周期性轮动。</div>
+                    <div class="meta"><span class="source source-sa">SA</span><span>02月</span><span class="arrow">→</span></div>
+                </a>
+            </div>
+
+            <div class="news-card">
+                <a href="https://www.marketscreener.com/news/press-digest-wall-street-journal-february-6-ce7e5ad8de8af427" target="_blank" rel="noopener">
+                    <span class="tag tag-commodity">贵金属</span>
+                    <div class="title-en">CME Hikes Margins on Gold & Silver Futures</div>
+                    <div class="summary-zh">芝商所上调贵金属期货保证金：黄金从8%升至9%，白银从15%升至18%，反映大宗商品波动加剧。</div>
+                    <div class="meta"><span class="source source-wsj">WSJ</span><span>02-06</span><span class="arrow">→</span></div>
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ═══════════════ 加密货币 ═══════════════ -->
+    <div class="segment-section" data-segment="crypto">
+        <div class="segment-header seg-crypto">
+            <div class="segment-icon">B</div>
+            <h2>加密货币 · Crypto</h2>
+            <span class="count">1 篇</span>
+        </div>
+        <div class="news-grid">
+
+            <div class="news-card">
+                <a href="https://seekingalpha.com/article/4868209-what-triggered-bitcoin-major-selloff-in-february-2026" target="_blank" rel="noopener">
+                    <span class="tag tag-crypto">比特币</span>
+                    <div class="title-en">What Triggered Bitcoin's Major Selloff in Feb 2026?</div>
+                    <div class="summary-zh">深度分析BTC 2月抛售。杠杆已大幅降低、价格走势有序，但多项指标显示压力仍高。底层结构和基本面完好，关注后续走向。</div>
+                    <div class="meta"><span class="source source-sa">SA</span><span>02-10</span><span class="arrow">→</span></div>
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ═══════════════ 企业动态 ═══════════════ -->
+    <div class="segment-section" data-segment="corporate">
+        <div class="segment-header seg-corporate">
+            <div class="segment-icon">K</div>
+            <h2>企业动态 · Corporate</h2>
+            <span class="count">1 篇</span>
+        </div>
+        <div class="news-grid">
+
+            <div class="news-card">
+                <a href="https://www.marketscreener.com/news/press-digest-wall-street-journal-february-9-ce7e5adedc8bf322" target="_blank" rel="noopener">
+                    <span class="tag tag-corporate">CEO变更</span>
+                    <div class="title-en">Kroger to Name Former Walmart Exec Greg Foran as CEO</div>
+                    <div class="summary-zh">Kroger准备任命前沃尔玛高管Greg Foran为新CEO，消息传出后股价跳涨近5%。被视为推进数字化转型和提升竞争力的重要信号。</div>
+                    <div class="meta"><span class="source source-wsj">WSJ</span><span>02-09</span><span class="arrow">→</span></div>
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ═══════════════ DAILY REFRESH GUIDE ═══════════════ -->
+    <div class="refresh-info" id="refresh-guide">
+        <h3>如何每天自动更新此页面？</h3>
+        <p>此页面为静态 HTML，内容需要通过 Claude Code 来刷新。以下是三种方式：</p>
+
+        <p><strong>方式一：手动刷新（最简单）</strong></p>
+        <p>每天打开 Claude Code，输入以下指令：</p>
+        <div class="cmd-block">
+            请帮我更新 WSJ/index.html，抓取今天最新的 WSJ 和 Seeking Alpha 新闻，<br>
+            更新市场行情数据，保持现有的网格布局和中文摘要格式。
+        </div>
+
+        <p><strong>方式二：macOS 定时任务（自动化）</strong></p>
+        <p>创建一个 shell 脚本配合 <code>cron</code> 或 <code>launchd</code>，每天定时调用 Claude Code CLI：</p>
+        <div class="cmd-block">
+            <span style="color:#636e7b"># 1. 创建更新脚本</span><br>
+            cat &gt; ~/update-news.sh &lt;&lt;'EOF'<br>
+            #!/bin/bash<br>
+            cd ~/Desktop/Personal\ Website/WSJ<br>
+            claude -p "更新 index.html: 抓取今天最新WSJ和Seeking Alpha新闻，更新行情数据，保持grid布局和中文摘要"<br>
+            EOF<br>
+            chmod +x ~/update-news.sh<br><br>
+            <span style="color:#636e7b"># 2. 添加 cron 定时任务（每天早上8点执行）</span><br>
+            crontab -e<br>
+            <span style="color:#636e7b"># 添加这一行：</span><br>
+            0 8 * * * ~/update-news.sh
+        </div>
+
+        <p><strong>方式三：GitHub Pages + GitHub Actions（推荐，可分享）</strong></p>
+        <p>将此项目推送到 GitHub，配置 Actions 每日定时运行 Claude Code 更新内容，自动部署到 GitHub Pages，随时随地访问。</p>
+    </div>
+
+</div>
+
+<div class="footer">
+    <p>点击任一卡片跳转至原文 · 按分类标签筛选浏览</p>
+    <p style="margin-top:8px;">数据来源：<a href="https://www.wsj.com" target="_blank">WSJ</a> · <a href="https://seekingalpha.com" target="_blank">Seeking Alpha</a> · <a href="https://tradingeconomics.com/commodities" target="_blank">Trading Economics</a></p>
+    <p style="margin-top:8px; color:#363d45;">更新时间：2026年2月10日</p>
+</div>
+
+<script>
+// Segment filter tabs
+document.querySelectorAll('.seg-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const seg = btn.dataset.seg;
+        document.querySelectorAll('.segment-section').forEach(section => {
+            if (seg === 'all') {
+                section.style.display = '';
+            } else {
+                section.style.display = section.dataset.segment === seg ? '' : 'none';
+            }
+        });
+    });
+});
+</script>
+
+</body>
+</html>
