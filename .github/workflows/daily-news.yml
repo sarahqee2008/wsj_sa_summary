@@ -71,11 +71,11 @@ jobs:
 
           cards = card_pattern.findall(content)
 
-          # Pick top 8 unique articles (dedup by URL)
+          # Pick top 10 unique articles (dedup by URL)
           seen_urls = set()
           top_news = []
           for url, title, summary, source in cards:
-              if url not in seen_urls and len(top_news) < 8:
+              if url not in seen_urls and len(top_news) < 10:
                   seen_urls.add(url)
                   top_news.append({
                       'url': html.unescape(url),
@@ -86,20 +86,31 @@ jobs:
 
           # Build HTML for email
           news_html = ''
-          for i, item in enumerate(top_news):
-              source_color = '#58a6ff'
+          for i, item in enumerate(top_news, 1):
+              source_color = '#588ef0'
+              source_icon = '📊'
               if 'Barron' in item['source']:
-                  source_color = '#e74c3c'
+                  source_color = '#d97706'
+                  source_icon = '📈'
               elif 'SA' in item['source']:
-                  source_color = '#2ecc71'
+                  source_color = '#10b981'
+                  source_icon = '💡'
               elif 'Insurer' in item['source']:
-                  source_color = '#f39c12'
+                  source_color = '#f59e0b'
+                  source_icon = '🛡️'
 
               news_html += f'''
-              <div style="margin-bottom: 16px; padding: 14px 16px; background: #f8f9fa; border-radius: 8px; border-left: 3px solid {source_color};">
-                <a href="{item['url']}" style="color: #1a1a2e; text-decoration: none; font-size: 14px; font-weight: 600; line-height: 1.4;">{item['title']}</a>
-                <p style="color: #666; font-size: 13px; margin: 6px 0 0; line-height: 1.6;">{item['summary']}</p>
-                <span style="color: {source_color}; font-size: 11px; font-weight: 500;">{item['source']}</span>
+              <div style="margin-bottom: 12px; padding: 12px 14px; background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%); border-radius: 6px; border-left: 4px solid {source_color}; transition: all 0.2s ease;">
+                <div style="display: flex; align-items: flex-start; gap: 10px;">
+                  <span style="color: {source_color}; font-weight: bold; font-size: 16px; margin-top: 2px; min-width: 20px;">{i}.</span>
+                  <div style="flex: 1;">
+                    <a href="{item['url']}" style="color: #1f2937; text-decoration: none; font-size: 13px; font-weight: 600; line-height: 1.5; display: block; margin-bottom: 6px; word-break: break-word;">{item['title']}</a>
+                    <p style="color: #6b7280; font-size: 12px; margin: 0; line-height: 1.5; word-break: break-word;">{item['summary']}</p>
+                    <div style="margin-top: 6px; display: flex; align-items: center; gap: 8px;">
+                      <span style="display: inline-block; background: {source_color}; color: white; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 12px;">{source_icon} {item['source']}</span>
+                    </div>
+                  </div>
+                </div>
               </div>'''
 
           # Write to env file
@@ -108,7 +119,7 @@ jobs:
               env_file.write(news_html)
               env_file.write('\nNEWSEOF\n')
 
-          print(f"Extracted {len(top_news)} top news items for email")
+          print(f"Extracted {len(top_news)} top news items for email (max 10)")
           PYEOF
 
       - name: Send email notification
@@ -124,28 +135,52 @@ jobs:
           to: sarah.qee2008@gmail.com,dyeung4190@gmail.com,xinqi0830@yahoo.com
           from: ${{ secrets.GMAIL_USERNAME }}
           html_body: |
-            <div style="font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', Arial, sans-serif; max-width: 640px; margin: 0 auto; padding: 20px; background: #ffffff;">
-              <h2 style="color: #1a1a2e; margin-bottom: 4px;">🗞️ Guaiguai News ${{ env.UPDATE_DATE }}</h2>
-              <p style="color: #888; font-size: 13px; margin-top: 0;">MarketWatch · Barron's · Seeking Alpha · The Insurer</p>
+            <div style="font-family: -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif; max-width: 680px; margin: 0 auto; padding: 0; background: linear-gradient(135deg, #f5f7fa 0%, #f0f3f8 100%);">
+              <!-- Header -->
+              <div style="background: linear-gradient(135deg, #588ef0 0%, #4b7dd9 100%); padding: 28px 24px; border-radius: 12px 12px 0 0;">
+                <h1 style="color: #ffffff; margin: 0 0 8px 0; font-size: 26px; font-weight: 700;">🗞️ Guaiguai News</h1>
+                <p style="color: rgba(255,255,255,0.9); font-size: 14px; margin: 0; font-weight: 500;">${{ env.UPDATE_DATE }} · Daily Financial News Briefing</p>
+                <p style="color: rgba(255,255,255,0.8); font-size: 12px; margin: 8px 0 0 0;">📊 MarketWatch · 📈 Barron's · 💡 Seeking Alpha · 🛡️ The Insurer</p>
+              </div>
 
-              <p style="margin: 20px 0 12px;">
-                <a href="https://sarahqee2008.github.io/wsj_sa_summary/"
-                   style="background: #388bfd; color: white; padding: 10px 24px; border-radius: 8px;
-                          text-decoration: none; font-weight: 600; font-size: 14px; display: inline-block;">
-                  📖 查看完整新闻面板
-                </a>
-              </p>
+              <!-- Main Content -->
+              <div style="padding: 28px 24px;">
+                <!-- CTA Button -->
+                <div style="text-align: center; margin-bottom: 24px;">
+                  <a href="https://sarahqee2008.github.io/wsj_sa_summary/"
+                     style="background: linear-gradient(135deg, #588ef0 0%, #4b7dd9 100%); color: white; padding: 12px 32px; border-radius: 8px;
+                            text-decoration: none; font-weight: 600; font-size: 15px; display: inline-block; box-shadow: 0 4px 12px rgba(88, 142, 240, 0.3); transition: all 0.3s ease;">
+                    🚀 查看完整新闻面板 · 实时行情
+                  </a>
+                </div>
 
-              <hr style="border: none; border-top: 1px solid #e8e8e8; margin: 20px 0;">
+                <!-- Top 10 News Section -->
+                <div>
+                  <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 2px solid rgba(88, 142, 240, 0.2);">
+                    <span style="font-size: 20px;">📌</span>
+                    <h2 style="color: #1f2937; font-size: 18px; font-weight: 700; margin: 0;">今日要闻 TOP 10</h2>
+                    <span style="margin-left: auto; background: #588ef0; color: white; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 12px;">精选</span>
+                  </div>
 
-              <h3 style="color: #333; font-size: 15px; margin-bottom: 14px;">📌 今日要闻精选</h3>
+                  ${{ env.NEWS_HTML }}
+                </div>
 
-              ${{ env.NEWS_HTML }}
+                <!-- Footer Section -->
+                <div style="margin-top: 28px; padding-top: 20px; border-top: 2px solid rgba(88, 142, 240, 0.1);">
+                  <div style="background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%); padding: 16px; border-radius: 8px; text-align: center;">
+                    <p style="color: #6b7280; font-size: 12px; margin: 0 0 8px 0; line-height: 1.6;">
+                      💼 <strong>Guaiguai News</strong> · 智能财经资讯 · 每个交易日自动推送<br>
+                      实时行情及更多内容，欢迎访问网页版
+                    </p>
+                    <a href="https://sarahqee2008.github.io/wsj_sa_summary/"
+                       style="color: #588ef0; text-decoration: none; font-weight: 600; font-size: 12px;">
+                       sarahqee2008.github.io/wsj_sa_summary →
+                    </a>
+                  </div>
 
-              <hr style="border: none; border-top: 1px solid #e8e8e8; margin: 20px 0;">
-
-              <p style="color: #aaa; font-size: 11px; text-align: center;">
-                Guaiguai News · 自动推送 · 实时行情请访问网页版<br>
-                <a href="https://sarahqee2008.github.io/wsj_sa_summary/" style="color: #388bfd;">sarahqee2008.github.io/wsj_sa_summary</a>
-              </p>
+                  <p style="color: #9ca3af; font-size: 10px; text-align: center; margin: 12px 0 0 0; padding: 0;">
+                    本邮件由自动化流程生成 · 数据来源于公开市场信息
+                  </p>
+                </div>
+              </div>
             </div>
